@@ -4,6 +4,7 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -12,26 +13,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="COMPANY")
+@Table(name="CUSTOMER")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Company {
+public class Customer {
 	
 	@Id
-	@GeneratedValue
-	private int id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
 	
 	@Basic(optional = false)
-	@Column (nullable = false, name = "companyName")
-	private String companyName;
+	@Column(nullable = false, name = "customerName")
+	private String customerName;
 	
 	@Basic(optional = false)
-	@Column (nullable = false, name = "password")
+	@Column(nullable = false, name = "password")
 	private String password;
 	
-	@Basic(optional = false)
-	@Column (nullable = false, name = "email")
-	private String email;
 	
+
 }
