@@ -37,5 +37,4 @@ public interface AdminService {
 	boolean checkIfCustomerNameAlreadyExists(String customerName);
 
 	void updateCustomer(Customer customer, String password);
-
 }
