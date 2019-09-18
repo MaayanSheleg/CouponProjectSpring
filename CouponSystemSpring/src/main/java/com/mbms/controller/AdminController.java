@@ -38,7 +38,8 @@ public class AdminController {
 	public Company companyById(@PathVariable int id) {
 		return adminService.companyById(id);
 	}
-
+	
+	
 	@PostMapping("/createCompany")
 	public ResponseEntity<Company> createCompany(@RequestBody Company company) throws Exception {
 		Company company2 = adminService.createCompany(company);
