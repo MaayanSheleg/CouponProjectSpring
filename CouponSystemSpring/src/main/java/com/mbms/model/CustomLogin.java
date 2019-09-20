@@ -1,6 +1,6 @@
 package com.mbms.model;
 
-import com.mbms.model.LoginType;
+import com.mbms.login.LoginType;
 
 public class CustomLogin {
 	

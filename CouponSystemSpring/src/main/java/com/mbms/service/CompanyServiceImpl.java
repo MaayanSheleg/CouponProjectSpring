@@ -3,8 +3,6 @@ package com.mbms.service;
 import java.util.List;
 
 import javax.transaction.Transactional;
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,11 +10,13 @@ import org.springframework.stereotype.Service;
 import com.mbms.epository.CompanyRepository;
 import com.mbms.epository.CouponRepository;
 import com.mbms.exceptions.CouponSystemException;
+import com.mbms.login.CouponClientFacade;
+import com.mbms.login.LoginType;
 import com.mbms.model.Company;
 import com.mbms.model.Coupon;
 
 @Service
-public class CompanyServiceImpl implements CompanyService {
+public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 
 	@Autowired
 	private CompanyRepository companyRepository;
@@ -24,67 +24,74 @@ public class CompanyServiceImpl implements CompanyService {
 	@Autowired
 	private CouponRepository couponRepository;
 
+
 	public boolean performLogin(String name, String password) {
 
 		Company company = companyRepository.findByCompanyNameAndPassword(name, password);
 		if (company == null) {
 			return false;
 		} else {
-
 			return true;
 		}
 	}
-
+	
 	@Override
 	@Transactional
 	public Coupon insertCoupon(Coupon coupon, int companyId) throws CouponSystemException {
 
 		if (companyRepository.findById(companyId).isPresent()) {
+
 			if (couponRepository.findByTitle(coupon.getTitle()) == null) {
+
 				Company company = companyRepository.findById(companyId).get();
 				coupon.setCompany(company);
 				couponRepository.save(coupon);
+
 			} else {
+
 				throw new CouponSystemException("There is already coupon with the title " + coupon.getTitle());
 			}
-		}
-		return coupon;
 	}
+		return coupon;}
+
+
 
 	@Override
-	public void removeCoupon(int couponId, int companyId) throws CouponSystemException {
+	public void removeCoupon(int couponId, int companyId)
+
+			throws CouponSystemException {
 
 		if (companyRepository.findById(companyId).isPresent() && couponRepository.findById(couponId).isPresent()) {
 			Coupon coupon = couponRepository.getCouponCompany(couponId, companyId);
 			if (coupon != null) {
 				couponRepository.delete(coupon);
 			}
+
 		} else {
+
 			throw new CouponSystemException("The coupon" + couponId + "is not exist");
+
 		}
+
 	}
 
-//	@Override
-//	public Coupon updateCoupon(Coupon coupon, int companyId) throws CouponSystemException {
-//
-//		if ((companyRepository.findById(companyId).isPresent()) && (couponRepository.findById(coupon.getId()).isPresent())) {
-//
-//			if (couponRepository.findById(coupon.getId()).get().getTitle().toString()
-//					.equals(coupon.getTitle().toString())) {
-//
-//				if (couponRepository.getCouponCompany(coupon.getId(), companyId) != null) {
-//					System.out.println(couponRepository.getCouponCompany(coupon.getId(), companyId));
-//					coupon.setCompany(companyRepository.findById(companyId).get());
-//					couponRepository.save(coupon);
-//
+
+
+	@Override
+	public Coupon updateCoupon(Coupon coupon, int companyId) throws CouponSystemException {		
+//	if ((companyRepository.findById(companyId).isPresent())&& (couponRepository.findById(coupon.getId()).isPresent())) {
+//		if (couponRepository.findById(coupon.getId()).get().getTitle().toString().equals( coupon.getTitle().toString())) {
+//			if (couponRepository.getCouponCompany(coupon.getId(), companyId) != null) {
+//				System.out.println(couponRepository.getCouponCompany(coupon.getId(), companyId));
+//				coupon.setCompany(companyRepository.findById(companyId).get());
+//				couponRepository.save(coupon);
 //				} else {
 //					System.out.println(couponRepository.getCouponCompany(coupon.getId(), companyId));
 //					throw new CouponSystemException("The coupon" + coupon + "is not exist");
 //				}
-//			}
-//		}
-//		return coupon;
-//	}
+//		}}
+	return coupon;
+	}
 
 	@Override
 	public Coupon getCoupon(int couponId, int companyId) throws CouponSystemException {
@@ -94,8 +101,7 @@ public class CompanyServiceImpl implements CompanyService {
 			for (Coupon coupi : companyCoupons) {
 				if (coupi.getId() != couponId) {
 					throw new CouponSystemException("coupon is not exist");
-				}
-				coupon = coupi;
+				} coupon= coupi;
 			}
 		}
 		return coupon;
@@ -126,8 +132,7 @@ public class CompanyServiceImpl implements CompanyService {
 	}
 
 	@Override
-	public Coupon updateCoupon(@Valid Coupon coupon, @Positive int companyId) throws CouponSystemException {
-		// TODO Auto-generated method stub
+	public CouponClientFacade login(String name, String password, LoginType clientType) {
 		return null;
 	}
 }

@@ -1,4 +1,4 @@
-package com.mbms.service;
+package com.mbms.login;
 
 import java.util.Date;
 import java.util.List;
@@ -17,7 +17,9 @@ import com.mbms.model.Coupon;
 import com.mbms.model.CustomLogin;
 import com.mbms.model.Customer;
 import com.mbms.model.Log;
-import com.mbms.model.LoginType;
+import com.mbms.service.AdminService;
+import com.mbms.service.CompanyService;
+import com.mbms.service.CustomerService;
 
 /**
  * The class will perform general actions related to the system. Log in, and delete expired coupons.
@@ -66,7 +68,7 @@ public class SystemService {
 
 				if (customerService.performLogin(name, password)) {
 					Customer customer = customerService.getCustomerName(name);
-//					return new CustomLogin(loginType.CUSTOMER, customer.getId());
+	//				return new CustomLogin(loginType.CUSTOMER, customer.getId());
 				} else {
 					throw new CouponSystemException("incorect password");
 				}

@@ -9,6 +9,5 @@ import com.mbms.model.Customer;
 public interface CustomerRepository extends JpaRepository<Customer, Integer>{
 
 	Customer findByCustomerName(String customerName);
-
 	Customer findByCustomerNameAndPassword(String name, String password);
 }

@@ -21,5 +21,4 @@ public interface LogRepository extends JpaRepository<Log, Integer> {
 
 	@Query("select l from Log l where l.success = 1 ")
 	List<Log> FindSuccessedLogs();
-
 }

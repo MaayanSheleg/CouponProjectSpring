@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service;
 import com.mbms.epository.CompanyRepository;
 import com.mbms.epository.CustomerRepository;
 import com.mbms.exceptions.CouponSystemException;
+import com.mbms.login.CouponClientFacade;
+import com.mbms.login.LoginType;
 import com.mbms.model.Company;
 import com.mbms.model.Customer;
 
 @Service
-public class AdminServiceImpl implements AdminService {
+public class AdminServiceImpl implements AdminService, CouponClientFacade {
 
 	@Autowired
 	private CompanyRepository companyRepository;
@@ -20,22 +22,20 @@ public class AdminServiceImpl implements AdminService {
 	@Autowired
 	private CustomerRepository customerRepository;
 
-	private String adminName = "admin";
-	private String adminPassword = "1234";
-
-	@Autowired
 	public AdminServiceImpl() {
 	}
 
 	public boolean performLogin(String name, String password) throws CouponSystemException {
-		if (adminName.equals(name) && adminPassword.equals(password)) {
+		if (name.equals("admin") && password.equals("1234")) {
 			return true;
 		} else {
 			return false;
+
 		}
+
 	}
 
-	// ******* Company *******
+	// COMPANY
 
 	public boolean checkIfCompanyNameAlreadyExists(String companyName) {
 		if (companyRepository.findByCompanyName(companyName) != null) {
@@ -78,7 +78,7 @@ public class AdminServiceImpl implements AdminService {
 
 	}
 
-	//// ******* Customer *******
+	//// Customer
 
 	public boolean checkIfCustomerNameAlreadyExists(String custName) {
 		if (customerRepository.findByCustomerName(custName) != null) {
@@ -119,5 +119,11 @@ public class AdminServiceImpl implements AdminService {
 	public void updateCustomer(Customer customer, String password) {
 		customer.setPassword(password);
 		customerRepository.save(customer);
+	}
+
+	@Override
+	public CouponClientFacade login(String name, String password, LoginType clientType) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
