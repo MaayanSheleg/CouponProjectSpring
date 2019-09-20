@@ -9,6 +9,9 @@ import com.mbms.model.Company;
 public interface CompanyRepository extends JpaRepository<Company, Integer> {
 
 	Company findByCompanyName(String companyName);
-	void deleteById (int compId);
+
+	void deleteById(int compId);
+
 	Company findByCompanyNameAndPassword(String name, String password);
+	
 }

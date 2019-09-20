@@ -6,9 +6,11 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.mbms.epository.CompanyRepository;
 import com.mbms.epository.CouponRepository;
 import com.mbms.epository.LogRepository;
 import com.mbms.exceptions.CouponSystemException;
@@ -18,8 +20,11 @@ import com.mbms.model.CustomLogin;
 import com.mbms.model.Customer;
 import com.mbms.model.Log;
 import com.mbms.service.AdminService;
+import com.mbms.service.AdminServiceImpl;
 import com.mbms.service.CompanyService;
+import com.mbms.service.CompanyServiceImpl;
 import com.mbms.service.CustomerService;
+import com.mbms.service.CustomerServiceImpl;
 
 /**
  * The class will perform general actions related to the system. Log in, and delete expired coupons.
@@ -29,36 +34,43 @@ import com.mbms.service.CustomerService;
 public class SystemService {
 	
 	@Autowired
-	private AdminService adminService;
+	private AdminServiceImpl adminService;
 
 	@Autowired
-	private CompanyService companyService;
+	private CompanyServiceImpl companyService;
 
 	@Autowired
-	private CustomerService customerService;
+	private CustomerServiceImpl customerService;
 
 	@Autowired
 	private CouponRepository couponRepository;
-
+	
+	@Autowired 
+	private CompanyRepository companyRepository;
 	@Autowired
 	private LogRepository logRepository;
+	
+	@Autowired
+	private ApplicationContext context;
 
-	public CustomLogin login(String name, String password, LoginType loginType) throws CouponSystemException {
+	public CouponClientFacade login(String name, String password, LoginType loginType) throws CouponSystemException {
 		switch (loginType) {
 			case ADMIN:
-				if (adminService.performLogin(name, password)) {
-					CustomLogin customLogin = new CustomLogin(LoginType.ADMIN, 1);
-					return customLogin;
+				if (name.equals("admin") && password.equals("1234")) {
+					adminService = context.getBean(AdminServiceImpl.class);
+					return adminService;
 				} else {
-					throw new CouponSystemException("incorect password");
+					throw new CouponSystemException("incorect password or userName");
 				}
 				
 				
 			case COMPANY:
 
-				if (companyService.performLogin(name, password)) {
-					Company company = companyService.getComapnyByName(name);
-					return new CustomLogin(LoginType.COMPANY, company.getId());
+				Company company = companyRepository.findByCompanyNameAndPassword(name, password);
+				if (company!=null) {
+					CompanyServiceImpl comp= context.getBean(CompanyServiceImpl.class);
+					comp.setCompany(company);
+					return companyService;
 				} else {
 
 					throw new CouponSystemException("incorect password");

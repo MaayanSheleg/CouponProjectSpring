@@ -26,27 +26,27 @@ public class LoginController {
 	@Autowired
 	private SystemService couponSystem;
 
-//	@PostMapping("login")
-//	public ResponseEntity<String>login(@RequestParam String name, @RequestParam String password, @RequestParam String clientType) throws CouponSystemException{
-//		if (!clientType.equals("ADMIN") && !clientType.equals("COMPANY") && !clientType.equals("CUSTOMER")) {
-//			return new ResponseEntity<>("Check clientType again", HttpStatus.UNAUTHORIZED);
-//		}
-//		Session session = new Session();
-//		CouponClientFacade facade = null;
-//		String token = UUID.randomUUID().toString();
-//		long lastAccessed=System.currentTimeMillis();
-//		try {
-//			facade = couponSystem.login(name, password, LoginType.valueOf(clientType));
-//			session.setFacade(facade);
-//			session.setLastAccesed(lastAccessed);
-//			tokens.put(token, session);
-//			return new ResponseEntity<>(token,HttpStatus.OK);
-//
-//		} catch (CouponSystemException e) {
-//
-//			return new ResponseEntity<>(e.getMessage(),HttpStatus.UNAUTHORIZED);
-//		}
-//	}
+	@PostMapping("login")
+	public ResponseEntity<String>login(@RequestParam String name, @RequestParam String password, @RequestParam String clientType) throws CouponSystemException{
+		if (!clientType.equals("ADMIN") && !clientType.equals("COMPANY") && !clientType.equals("CUSTOMER")) {
+			return new ResponseEntity<>("Check clientType again", HttpStatus.UNAUTHORIZED);
+		}
+		Session session = new Session();
+		CouponClientFacade facade = null;
+		String token = UUID.randomUUID().toString();
+		long lastAccessed=System.currentTimeMillis();
+		try {
+			facade = couponSystem.login(name, password, LoginType.valueOf(clientType));
+			session.setFacade(facade);
+			session.setLastAccesed(lastAccessed);
+			tokens.put(token, session);
+			return new ResponseEntity<>(token,HttpStatus.OK);
+
+		} catch (CouponSystemException e) {
+
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.UNAUTHORIZED);
+		}
+	}
 
 	@RequestMapping(path = "logout")
 	public boolean logout(HttpServletRequest request, HttpServletResponse response) {

@@ -1,5 +1,6 @@
 package com.mbms.service;
 
+import java.sql.Date;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -16,8 +17,6 @@ public interface CompanyService {
 
 	void removeCoupon(@Positive int couponId, @Positive int companyId) throws CouponSystemException;
 
-	Coupon updateCoupon(@Valid Coupon coupon, @Positive int companyId) throws CouponSystemException;
-
 	Coupon getCoupon(@Positive int couponId, @Positive int companyId) throws CouponSystemException;
 
 	Company getCompany(@Positive int companyId) throws CouponSystemException;
@@ -27,5 +26,7 @@ public interface CompanyService {
 	List<Coupon> getCompanyCoupons(@Positive int companyId) throws CouponSystemException;
 
 	boolean performLogin(String name, String password);
+
+	Coupon updateCoupon(Coupon coupon, Date endeDate, double price) throws CouponSystemException;
 
 }

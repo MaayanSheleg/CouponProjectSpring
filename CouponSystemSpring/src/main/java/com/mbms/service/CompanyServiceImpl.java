@@ -1,5 +1,6 @@
 package com.mbms.service;
 
+import java.sql.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -24,6 +25,11 @@ public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 	@Autowired
 	private CouponRepository couponRepository;
 
+	private Company company;
+	
+	public void setCompany(Company company) {
+		this.company = company;
+	}
 
 	public boolean performLogin(String name, String password) {
 
@@ -78,19 +84,10 @@ public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 
 
 	@Override
-	public Coupon updateCoupon(Coupon coupon, int companyId) throws CouponSystemException {		
-//	if ((companyRepository.findById(companyId).isPresent())&& (couponRepository.findById(coupon.getId()).isPresent())) {
-//		if (couponRepository.findById(coupon.getId()).get().getTitle().toString().equals( coupon.getTitle().toString())) {
-//			if (couponRepository.getCouponCompany(coupon.getId(), companyId) != null) {
-//				System.out.println(couponRepository.getCouponCompany(coupon.getId(), companyId));
-//				coupon.setCompany(companyRepository.findById(companyId).get());
-//				couponRepository.save(coupon);
-//				} else {
-//					System.out.println(couponRepository.getCouponCompany(coupon.getId(), companyId));
-//					throw new CouponSystemException("The coupon" + coupon + "is not exist");
-//				}
-//		}}
-	return coupon;
+	public Coupon updateCoupon(Coupon coupon, Date endeDate, double price) throws CouponSystemException {		
+		coupon.setEndDate(endeDate);
+		coupon.setPrice(price);
+		return couponRepository.save(coupon);
 	}
 
 	@Override
