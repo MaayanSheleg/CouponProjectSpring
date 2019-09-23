@@ -12,18 +12,15 @@ import org.springframework.stereotype.Service;
 
 import com.mbms.epository.CompanyRepository;
 import com.mbms.epository.CouponRepository;
+import com.mbms.epository.CustomerRepository;
 import com.mbms.epository.LogRepository;
 import com.mbms.exceptions.CouponSystemException;
 import com.mbms.model.Company;
 import com.mbms.model.Coupon;
-import com.mbms.model.CustomLogin;
 import com.mbms.model.Customer;
 import com.mbms.model.Log;
-import com.mbms.service.AdminService;
 import com.mbms.service.AdminServiceImpl;
-import com.mbms.service.CompanyService;
 import com.mbms.service.CompanyServiceImpl;
-import com.mbms.service.CustomerService;
 import com.mbms.service.CustomerServiceImpl;
 
 /**
@@ -41,12 +38,16 @@ public class SystemService {
 
 	@Autowired
 	private CustomerServiceImpl customerService;
+	
+	@Autowired
+	private CustomerRepository customerRepository;
 
 	@Autowired
 	private CouponRepository couponRepository;
 	
 	@Autowired 
 	private CompanyRepository companyRepository;
+	
 	@Autowired
 	private LogRepository logRepository;
 	
@@ -55,7 +56,8 @@ public class SystemService {
 
 	public CouponClientFacade login(String name, String password, LoginType loginType) throws CouponSystemException {
 		switch (loginType) {
-			case ADMIN:
+		
+		case ADMIN:
 				if (name.equals("admin") && password.equals("1234")) {
 					adminService = context.getBean(AdminServiceImpl.class);
 					return adminService;
@@ -65,7 +67,6 @@ public class SystemService {
 				
 				
 			case COMPANY:
-
 				Company company = companyRepository.findByCompanyNameAndPassword(name, password);
 				if (company!=null) {
 					CompanyServiceImpl comp= context.getBean(CompanyServiceImpl.class);
@@ -77,16 +78,17 @@ public class SystemService {
 				}
 				
 			case CUSTOMER:
+				Customer customer = customerRepository.findByCustomerNameAndPassword(name, password);
+				if (customer!=null) {
+					customerService = context.getBean(CustomerServiceImpl.class);
+					customerService.setCustomer(customer);
+					return customerService;
 
-				if (customerService.performLogin(name, password)) {
-					Customer customer = customerService.getCustomerName(name);
-	//				return new CustomLogin(loginType.CUSTOMER, customer.getId());
 				} else {
 					throw new CouponSystemException("incorect password");
 				}
-			default:
-				throw new CouponSystemException("incorect password");
 		}
+		return null;
 	}
 
 	/**

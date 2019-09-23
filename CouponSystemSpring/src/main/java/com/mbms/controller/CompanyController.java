@@ -34,7 +34,6 @@ public class CompanyController {
 
 	@Autowired
 	private CouponRepository couponRepository;
-
 	
 	@Autowired
 	private Map<String, Session> tokens;

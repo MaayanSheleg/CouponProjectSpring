@@ -107,14 +107,14 @@ public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 
 	@Override
 	public void deleteCoupon(int couponId) throws Exception {
-		if (!couponRepository.existsById(couponId)) {
-			throw new Exception("This coupon id doesn't exist in DataBase");
-		}
-		List<Coupon> companyCoupons = couponRepository.findAllById(this.company.getId());
-		this.company.setCoupons(companyCoupons);
-		companyRepository.save(this.company);
-		customerServiceImpl.deleteCoupon(couponId);
-		couponRepository.deleteById(couponId);
+//		if (!couponRepository.existsById(couponId)) {
+//			throw new Exception("This coupon id doesn't exist in DataBase");
+//		}
+//		List<Coupon> companyCoupons = couponRepository.findAllById(this.company.getId());
+//		this.company.setCoupons(companyCoupons);
+//		companyRepository.save(this.company);
+//		customerServiceImpl.deleteCoupon(couponId);
+//		couponRepository.deleteById(couponId);
 	}
 
 	@Override
