@@ -1,20 +1,25 @@
 package com.mbms.service;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
-
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mbms.config.Utils;
 import com.mbms.epository.CompanyRepository;
 import com.mbms.epository.CouponRepository;
+import com.mbms.epository.CustomerRepository;
+import com.mbms.epository.IncomeRepository;
 import com.mbms.exceptions.CouponSystemException;
 import com.mbms.login.CouponClientFacade;
 import com.mbms.login.LoginType;
 import com.mbms.model.Company;
 import com.mbms.model.Coupon;
+import com.mbms.model.CouponCaregory;
+import com.mbms.model.Customer;
+import com.mbms.model.Income;
+import com.mbms.model.IncomeType;
 
 @Service
 public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
@@ -25,14 +30,22 @@ public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 	@Autowired
 	private CouponRepository couponRepository;
 
+	@Autowired
+	private CustomerRepository customerRepository;
+
+	@Autowired
+	private CustomerServiceImpl customerServiceImpl;
+
+	@Autowired
+	private IncomeRepository incomeRepository;
+	private Customer customer;
 	private Company company;
-	
+
 	public void setCompany(Company company) {
 		this.company = company;
 	}
-
+	
 	public boolean performLogin(String name, String password) {
-
 		Company company = companyRepository.findByCompanyNameAndPassword(name, password);
 		if (company == null) {
 			return false;
@@ -40,96 +53,150 @@ public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 			return true;
 		}
 	}
-	
-	@Override
-	@Transactional
-	public Coupon insertCoupon(Coupon coupon, int companyId) throws CouponSystemException {
-
-		if (companyRepository.findById(companyId).isPresent()) {
-
-			if (couponRepository.findByTitle(coupon.getTitle()) == null) {
-
-				Company company = companyRepository.findById(companyId).get();
-				coupon.setCompany(company);
-				couponRepository.save(coupon);
-
-			} else {
-
-				throw new CouponSystemException("There is already coupon with the title " + coupon.getTitle());
-			}
-	}
-		return coupon;}
-
-
 
 	@Override
-	public void removeCoupon(int couponId, int companyId)
-
-			throws CouponSystemException {
-
-		if (companyRepository.findById(companyId).isPresent() && couponRepository.findById(couponId).isPresent()) {
-			Coupon coupon = couponRepository.getCouponCompany(couponId, companyId);
-			if (coupon != null) {
-				couponRepository.delete(coupon);
-			}
-
+	public Coupon createCoupon(Coupon coupon) throws Exception {
+		if (checkIfTitleAlreadyExists(coupon.getTitle()) == false) {
+			couponRepository.save(coupon);
+			Company comp = companyRepository.findById(this.company.getId()).get();
+			comp.getCoupons().add(coupon);
+			System.err.println(coupon);
+			companyRepository.save(comp);
+			Income income = new Income();
+			income.setId(this.company.getId());
+			income.setAmount(100.0);
+			income.setDescription(IncomeType.COMPANY_NEW_COUPON);
+			income.setDate((Date) Utils.getCurrentDate());
+			income.setName("Company " + company.getCompanyName());
+			incomeRepository.save(income);
 		} else {
-
-			throw new CouponSystemException("The coupon" + couponId + "is not exist");
-
-		}
-
-	}
-
-
-
-	@Override
-	public Coupon updateCoupon(Coupon coupon, Date endeDate, double price) throws CouponSystemException {		
-		coupon.setEndDate(endeDate);
-		coupon.setPrice(price);
-		return couponRepository.save(coupon);
-	}
-
-	@Override
-	public Coupon getCoupon(int couponId, int companyId) throws CouponSystemException {
-		Coupon coupon = new Coupon();
-		if (couponRepository.findById(couponId).isPresent()) {
-			List<Coupon> companyCoupons = couponRepository.findByCompanyId(companyId);
-			for (Coupon coupi : companyCoupons) {
-				if (coupi.getId() != couponId) {
-					throw new CouponSystemException("coupon is not exist");
-				} coupon= coupi;
-			}
+			throw new Exception("The title " + coupon.getTitle() + " already exist, please try another title");
 		}
 		return coupon;
 	}
 
+	
 	@Override
-	public Company getCompany(int companyId) throws CouponSystemException {
-		if (!companyRepository.findById(companyId).isPresent()) {
-
-			throw new CouponSystemException("Company is not exist");
+	public List<Coupon> getAllCompanyCoupons(int company_id) throws Exception {
+		Company company = companyRepository.getOne(company_id);
+		if (company != null) {
+			List<Coupon> coupons = company.getCoupons();
+			if (coupons != null) {
+				return coupons;
+			} else {
+				throw new CouponSystemException("This company doesn't have any coupons");
+			}
 		} else {
-			return companyRepository.findById(companyId).get();
+			throw new Exception("This company doesn't exist");
 		}
 	}
 
 	@Override
-	public List<Coupon> getCompanyCoupons(int companyId) throws CouponSystemException {
-		return couponRepository.findByCompanyId(companyId);
+	public void updateCoupon(Coupon coupon, Date endDate, double price) {
+		coupon.setEndDate(endDate);
+		coupon.setPrice(price);
+		couponRepository.save(coupon);
+		Income income = new Income();
+		income.setId(this.company.getId());
+		income.setAmount(10.0);
+		income.setDescription(IncomeType.COMPANY_UPDATE_COUPON);
+		income.setDate((Date) Utils.getCurrentDate());
+		income.setName("Company " + company.getCompanyName());
+		incomeRepository.save(income);
 	}
 
 	@Override
-	public Company getComapnyByName(String name) throws CouponSystemException {
-		Company company = companyRepository.findByCompanyName(name);
-		if (company == null) {
-			throw new CouponSystemException("Company is not exist");
+	public void deleteCoupon(int couponId) throws Exception {
+		if (!couponRepository.existsById(couponId)) {
+			throw new Exception("This coupon id doesn't exist in DataBase");
 		}
-		return company;
+		List<Coupon> companyCoupons = couponRepository.findAllById(this.company.getId());
+		this.company.setCoupons(companyCoupons);
+		companyRepository.save(this.company);
+		customerServiceImpl.deleteCoupon(couponId);
+		couponRepository.deleteById(couponId);
+	}
+
+	@Override
+	public Company getCompany(int id) {
+		return companyRepository.findById(id).get();
+	}
+	
+
+
+	@Override
+	public List<Coupon> couponByCouponType(CouponCaregory couponType) throws Exception {
+		List<Coupon> allCompanycoupons = getAllCompanyCoupons(this.company.getId());
+		List<Coupon> couponsByType = couponRepository.findByType(couponType);
+		try {
+			for (Coupon coupon : allCompanycoupons) {
+				if (coupon.getType().equals(couponsByType)) {
+					couponsByType.add(coupon);
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Failed to get all coupons by type " + e.getMessage());
+		}
+		return couponsByType;
+	}
+
+	@Override
+	public List<Coupon> couponByPrice(double price) throws Exception {
+		List<Coupon> allCompanyCoupons = getAllCompanyCoupons(this.company.getId());
+		List<Coupon> couponsByPrice = couponRepository.findByPriceLessThan(price);
+		try {
+			for (Coupon coupon : allCompanyCoupons) {
+				if (coupon.getPrice() <= price) {
+					couponsByPrice.add(coupon);
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Failed to get all coupons by price " + e.getMessage());
+		}
+		return couponsByPrice;
+	}
+
+	@Override
+	public List<Coupon> couponByDate(Date endDate) throws Exception {
+		List<Coupon> allCompanyCoupons = getAllCompanyCoupons(this.company.getId());
+		List<Coupon> couponsByDate = couponRepository.findByEndDateBefore(endDate);
+		try {
+			for (Coupon coupon : allCompanyCoupons) {
+				if (coupon.getEndDate().equals(endDate) || coupon.getEndDate().before(endDate)) {
+					couponsByDate.add(coupon);
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Failed to get all coupons by date " + e.getMessage());
+		}
+		return couponsByDate;
+	}
+
+	
+
+	@Override
+	public boolean checkIfTitleAlreadyExists(String title) {
+		if (couponRepository.findByTitle(title) != null) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
 	public CouponClientFacade login(String name, String password, LoginType clientType) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void updateCoupon(Coupon coupon, java.sql.Date endDate, double price) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Coupon> couponByDate(java.sql.Date endDate) throws Exception {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }
