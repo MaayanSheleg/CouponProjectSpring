@@ -35,16 +35,26 @@ public class AdminController {
 	private Session exists (String token) {
 		return LoginController.tokens.get(token);
 	}
-	//COMPANY:
 	
-	@GetMapping("/getAllCompnies")
-	public ResponseEntity<List<Company>> getAllCompany(){
+	//COMPANY:
+	@GetMapping("/getAllCompnies/{token}")
+	public ResponseEntity<List<Company>> getAllCompany(@PathVariable String token)throws Exception{
+		Session session = exists(token);
+		if (session==null) {
+			throw new Exception("wrong session");
+		}
+		session.setLastAccesed(System.currentTimeMillis());
 		ResponseEntity<List<Company>> result = new ResponseEntity<List<Company>>(adminService.allCompanies(), HttpStatus.OK);
-		return result;
+	return result;
 	}
 	
-	@GetMapping("/getCompany/{id}")
-	public Company companyById(@PathVariable int id) {
+	@GetMapping("/getCompany/{id}/{token}")
+	public Company companyById(@PathVariable int id, @PathVariable String token)throws Exception{
+		Session session = exists(token);
+		if (session==null) {
+			throw new Exception("wrong session");
+		}
+		session.setLastAccesed(System.currentTimeMillis()); 
 		return adminService.companyById(id);
 	}
 	
@@ -68,45 +78,96 @@ public class AdminController {
 		return null;
 		
 	}
-	//not working
-	@PostMapping("/updateCompany")
-	public ResponseEntity<Company> updateCompany(@RequestParam int id, @RequestParam String password, @RequestParam String email) {
-		Company company = null;
-		company = adminService.companyById(id);
-		if (company !=null) {
-			adminService.updateCompany(company, password, email);
-			ResponseEntity<Company> result = new ResponseEntity<>(company,HttpStatus.OK);
-			return result;
+//not work!!
+	@PostMapping("/updateCompany/{token}")
+	public ResponseEntity<String> updateCompany(@PathVariable String token, @RequestParam int id,
+			@RequestParam String password, @RequestParam String email) throws Exception {
+		Session session = exists(token);
+		if (session == null) {
+			throw new Exception("Something went wrong with the session !!");
+		} else if (session != null) {
+			session.setLastAccesed(System.currentTimeMillis());
+			try {
+				Company company = null;
+				company = adminService.companyById(id);
+				System.out.println(company);
+				if (company != null) {
+					((AdminServiceImpl) session.getFacade()).updateCompany(company, password, email);
+					return new ResponseEntity<>("company " + company.getCompanyName() + " was updated", HttpStatus.OK);
+				} else {
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				}
+			} catch (Exception e) {
+				System.out.println("Failed to update company !!");
+			}
 		}
+
 		return null;
+
 	}
 	
-	@DeleteMapping ("/deleteCompany/{id}")
-	public ResponseEntity<Company> deleteCompany (@PathVariable("id") int id){
-		adminService.deleteCompany(id);
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		
+	
+	//no work
+	@DeleteMapping ("/deleteCompany/{id}/(token}")
+	public void deleteCompany (@PathVariable int id, @PathVariable String token) throws Exception{
+		Session session = exists(token);
+		if (session==null) {
+			throw new Exception("wrong session");
+		}
+		session.setLastAccesed(System.currentTimeMillis());
+		adminService.deleteCompany(id);	
 	}
+	
+
 	
 	//Customer
 	
-	@GetMapping("/getAllCustomers")
-	public ResponseEntity<List<Customer>> getAllCustomer(){
+	@GetMapping("/getAllCustomers/{token}")
+	public ResponseEntity<List<Customer>> getAllCustomer(@PathVariable String token)throws Exception{
+		Session session = exists(token);
+		if (session==null) {
+			throw new Exception("wrong session");
+		}
+		session.setLastAccesed(System.currentTimeMillis());
 		ResponseEntity<List<Customer>> result = new ResponseEntity<List<Customer>>(adminService.allCustomers(), HttpStatus.OK);
 		return result;
 	}
 	
-	@GetMapping("/getCustomer/{id}")
-	public Customer customerById(@PathVariable int id) {
+
+	
+	@GetMapping("/getCustomer/{id}/{token}")
+	public Customer customerById(@PathVariable int id, @PathVariable String token)throws Exception{
+		Session session = exists(token);
+		if (session==null) {
+			throw new Exception("wrong session");
+		}
+		session.setLastAccesed(System.currentTimeMillis()); 
 		return adminService.customerById(id);
 	}
 	
-	@PostMapping("/createCustomer")
-	public ResponseEntity<Customer> createCustomer (@RequestBody Customer customer) throws Exception{
-		Customer customer2 = adminService.createCustomer(customer);
-		ResponseEntity<Customer> result = new ResponseEntity<Customer>(customer2,HttpStatus.OK);
-		return result;
+	
+	
+	
+	@PostMapping("/createCustomer/{token}")
+	public ResponseEntity<String> createCustomer (@RequestBody Customer customer, @PathVariable String token) throws Exception{
+		Session session = exists(token);
+		System.out.println(session);
+		if (session==null) {
+			throw new Exception("wrong session");
+		} else if(session!=null) {
+			session.setLastAccesed(System.currentTimeMillis());
+		try {
+			((AdminServiceImpl)session.getFacade()).createCustomer(customer);
+			return new ResponseEntity<>("customer created", HttpStatus.OK);
+	}catch (Exception e){
+		return new ResponseEntity<>("wrong", HttpStatus.UNAUTHORIZED);
 	}
+	}
+		return null;
+		
+	}
+	
+	
 //not work
 	@PostMapping("/updateCustomer")
 	public ResponseEntity<Customer> updateCustomer(@RequestParam int id, @RequestParam String password){
@@ -120,8 +181,13 @@ public class AdminController {
 		return null;
 	}
 
-	@DeleteMapping("/deleteCustomer/{id}")	
-	public void deleteCustomer(@PathVariable int id) {
+	@DeleteMapping("/deleteCustomer/{id}/{token}")	
+	public void deleteCustomer(@PathVariable int id,  @PathVariable String token)throws Exception{
+		Session session = exists(token);
+		if (session==null) {
+			throw new Exception("wrong session");
+		}
+		session.setLastAccesed(System.currentTimeMillis()); 
 		 adminService.deleteCustomer(id);
 	}
 }
