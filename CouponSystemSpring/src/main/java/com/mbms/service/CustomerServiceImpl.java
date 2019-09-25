@@ -13,14 +13,14 @@ import com.mbms.exceptions.CouponSystemException;
 import com.mbms.login.CouponClientFacade;
 import com.mbms.login.LoginType;
 import com.mbms.model.Coupon;
-import com.mbms.model.CouponCaregory;
+import com.mbms.model.CouponType;
 import com.mbms.model.Customer;
 import com.mbms.model.Income;
 import com.mbms.model.IncomeType;
 
 @Service
 public class CustomerServiceImpl implements CustomerService, CouponClientFacade {
-
+	
 	@Autowired
 	private CustomerRepository customerRepository;
 
@@ -34,38 +34,39 @@ public class CustomerServiceImpl implements CustomerService, CouponClientFacade 
 
 	@Override
 	public CouponClientFacade login(String name, String password, LoginType clientType) {
-		System.out.println("Hello " + name + " nice to see you :) ");
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void setCustomer(Customer customer) {
-		this.customer = customer;
+		this.customer=customer;
 	}
 
 	@Override
 	public Customer purchaseCoupon(long couponId) throws CouponSystemException {
 		try {
+			
 			if (!couponRepository.existsById(couponId)) {
-				throw new CouponSystemException("This coupon doesn't exist, please try another one !");
+				throw new CouponSystemException("Coupon doesn't exist");		
 			}
-
+			
 			Coupon coupon = couponRepository.findById(couponId).get();
-
+			
 			if (coupon.getAmount() <= 0) {
 				throw new CouponSystemException("This coupon is out of stock !!");
 			}
-
+			
 			if (coupon.getEndDate().getTime() <= coupon.getStartDate().getTime()) {
 				throw new CouponSystemException("This coupon has been expired");
 			}
-
+			
 			couponRepository.save(coupon);
 			Customer customer = customerRepository.findById(this.customer.getId()).get();
 			customer.getCoupons().add(coupon);
 			customerRepository.save(customer);
 			coupon.setAmount(coupon.getAmount() - 1);
-
+			
 			Income income = new Income();
 			income.setClientId(this.customer.getId());
 			income.setAmount(coupon.getPrice());
@@ -73,15 +74,15 @@ public class CustomerServiceImpl implements CustomerService, CouponClientFacade 
 			income.setDescription(IncomeType.CUSTOMER_PURCHASE);
 			income.setName("customer " + customer.getCustomerName());
 			incomeService.storeIncome(income);
-
-		} catch (Exception e) {
+			
+		}catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 		return customer;
 	}
 
 	@Override
-	public List<Coupon> getAllCustomerPurchases(int customer_id) throws Exception {
+	public List<Coupon> getAllCustomerPurchases(long customer_id) throws Exception {
 		Customer customer = customerRepository.getOne(customer_id);
 		if (customer != null) {
 			List<Coupon> coupons = customer.getCoupons();
@@ -96,9 +97,9 @@ public class CustomerServiceImpl implements CustomerService, CouponClientFacade 
 	}
 
 	@Override
-	public List<Coupon> couponByType(CouponCaregory couponCaregory) throws Exception {
-		List<Coupon> allCustomercoupons = getAllCustomerPurchases((int) this.customer.getId());
-		List<Coupon> couponsByType = couponRepository.findByType(couponCaregory);
+	public List<Coupon> couponByType(CouponType couponType) throws Exception {
+		List<Coupon> allCustomercoupons = getAllCustomerPurchases(this.customer.getId());
+		List<Coupon> couponsByType = couponRepository.findByType(couponType);
 		try {
 			for (Coupon coupon : allCustomercoupons) {
 				if (coupon.getType().equals(couponsByType)) {
@@ -113,7 +114,7 @@ public class CustomerServiceImpl implements CustomerService, CouponClientFacade 
 
 	@Override
 	public List<Coupon> couponByPrice(double price) throws Exception {
-		List<Coupon> allCustomerCoupons = getAllCustomerPurchases((int) this.customer.getId());
+		List<Coupon> allCustomerCoupons = getAllCustomerPurchases(this.customer.getId());
 		List<Coupon> couponsByPrice = couponRepository.findByPriceLessThan(price);
 		try {
 			for (Coupon coupon : allCustomerCoupons) {
@@ -126,5 +127,4 @@ public class CustomerServiceImpl implements CustomerService, CouponClientFacade 
 		}
 		return couponsByPrice;
 	}
-
 }

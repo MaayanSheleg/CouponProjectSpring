@@ -92,7 +92,7 @@ public class CompanyController {
 			session.setLastAccesed(System.currentTimeMillis());
 			try {
 				Coupon coupon = null;
-				coupon = couponRepository.findById((int) id).get();
+				coupon = couponRepository.findById(id).get();
 				if (coupon != null) {
 					((CompanyServiceImpl) session.getFacade()).updateCoupon(coupon, endDate, price);
 					ResponseEntity<Coupon> result = new ResponseEntity<>(coupon, HttpStatus.OK);
@@ -114,7 +114,7 @@ public class CompanyController {
 			session.setLastAccesed(System.currentTimeMillis());
 			try {
 				Coupon coupon = null;
-				coupon = couponRepository.findById((int) couponId).get();
+				coupon = couponRepository.findById(couponId).get();
 				if (coupon != null) {
 					((CompanyServiceImpl) session.getFacade()).deleteCoupon((int) couponId);
 				}

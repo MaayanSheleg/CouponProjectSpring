@@ -17,7 +17,7 @@ import com.mbms.exceptions.CouponSystemException;
 import com.mbms.login.LoginController;
 import com.mbms.login.Session;
 import com.mbms.model.Coupon;
-import com.mbms.model.CouponCaregory;
+import com.mbms.model.CouponType;
 import com.mbms.service.CustomerService;
 import com.mbms.service.CustomerServiceImpl;
 
@@ -76,7 +76,7 @@ public class CustomerController {
 	}
 
 	@GetMapping("/getCustomerByCouponType/{couponType}/{token}")
-	public List<Coupon> getCustomerByCouponType(@PathVariable CouponCaregory couponType, @PathVariable String token)
+	public List<Coupon> getCustomerByCouponType(@PathVariable CouponType couponType, @PathVariable String token)
 			throws Exception {
 		Session session = exists(token);
 		if (session == null) {
