@@ -12,23 +12,23 @@ boolean performLogin(String name, String password) throws CouponSystemException;
 	
 	//company
 	Company createCompany(Company company) throws CouponSystemException;
-	void deleteCompany(int id);
+	void deleteCompany(long id);
 	List<Company> allCompanies();
 	
 	boolean checkIfCompanyNameAlreadyExists(String companyName);
-	Company companyById(int id);
+	Company companyById(long id);
 	void updateCompany(Company company, String password, String email);
 
 	//customer
 	Customer createCustomer(Customer customer) throws Exception;
-	void deleteCustomer(int id);
-
+	void deleteCustomer(long id);
 
 	List<Customer> allCustomers();
 
-	Customer customerById(int id);
+	Customer customerById(long id);
 
 	boolean checkIfCustomerNameAlreadyExists(String customerName);
+	
 	void updateCustomer(Customer customer, String password);
 
 }
