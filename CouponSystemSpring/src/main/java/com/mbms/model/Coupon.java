@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.Valid;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -42,11 +43,13 @@ public class Coupon implements Serializable{
 	
 	@Basic(optional = false)
 	@Column(nullable = false, name="startDate")
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	private Date startDate;
 
 
 	@Basic(optional = false)
 	@Column(nullable = false, name="endDate")
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	private Date endDate;
 
 	@Basic(optional = false)

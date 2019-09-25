@@ -83,7 +83,7 @@ public class CompanyController {
 
 
 	@PostMapping("/updateCoupon/{token}")
-	public ResponseEntity<Coupon> updateCoupon(@PathVariable String token, @RequestParam int id,
+	public ResponseEntity<Coupon> updateCoupon(@PathVariable String token, @RequestParam long id,
 			@RequestParam Date endDate, @RequestParam double price) throws Exception {
 		Session session = exists(token);
 		if (session == null) {
@@ -106,7 +106,7 @@ public class CompanyController {
 	}
 
 	@DeleteMapping("/deleteCoupon/{couponId}/{token}")
-	public void deleteCoupon(@PathVariable int couponId, @PathVariable String token) throws Exception {
+	public void deleteCoupon(@PathVariable long couponId, @PathVariable String token) throws Exception {
 		Session session = exists(token);
 		if (session == null) {
 			throw new Exception("Something went wrong with the session !!");
@@ -116,7 +116,7 @@ public class CompanyController {
 				Coupon coupon = null;
 				coupon = couponRepository.findById(couponId).get();
 				if (coupon != null) {
-					((CompanyServiceImpl) session.getFacade()).deleteCoupon(couponId);
+					((CompanyServiceImpl) session.getFacade()).deleteCoupon((int) couponId);
 				}
 			} catch (Exception e) {
 				System.out.println("Failed to delete coupon " + couponId + e.getMessage());

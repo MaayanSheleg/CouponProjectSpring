@@ -43,4 +43,8 @@ public class Income {
 	@Basic(optional = false)
 	@Column(nullable = false, name="amount")
 	private double amount;
+
+	@Basic(optional = false)
+	@Column(nullable = false, name="clientId")
+	private long clientId;
 }

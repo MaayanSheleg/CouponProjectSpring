@@ -1,57 +1,140 @@
 package com.mbms.service;
 
-import java.util.Optional;
+import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mbms.config.Utils;
 import com.mbms.epository.CouponRepository;
 import com.mbms.epository.CustomerRepository;
 import com.mbms.exceptions.CouponSystemException;
 import com.mbms.login.CouponClientFacade;
 import com.mbms.login.LoginType;
-import com.mbms.model.ClientType;
 import com.mbms.model.Coupon;
+import com.mbms.model.CouponCaregory;
 import com.mbms.model.Customer;
+import com.mbms.model.Income;
+import com.mbms.model.IncomeType;
 
 @Service
 public class CustomerServiceImpl implements CustomerService, CouponClientFacade {
-	
+
 	@Autowired
 	private CustomerRepository customerRepository;
-	
+
 	@Autowired
 	private CouponRepository couponRepository;
 
+	@Autowired
+	private IncomeService incomeService;
+
 	private Customer customer;
-	
-	public void purchaseCoupon (long couponId) throws CouponSystemException {
-		Coupon coupon = couponRepository.findById((int)couponId).get();
+
+	@Override
+	public CouponClientFacade login(String name, String password, LoginType clientType) {
+		return null;
+	}
+
+	@Override
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+
+	@Override
+	public Customer purchaseCoupon(long couponId) throws CouponSystemException {
 		
-		if (coupon==null) {
-			throw new CouponSystemException("This coupon doesn't exists, please thy another one");
+		try {
+			if (!couponRepository.existsById(couponId)) {
+				throw new CouponSystemException("This coupon doesn't exist, please try another one !");
+			}
+			
+			Coupon coupon = couponRepository.findById((long) couponId).get();
+			
+			if (coupon.getAmount() <= 0) {
+				throw new CouponSystemException("This coupon is out of stock !!");
+			}
+			
+			if (coupon.getEndDate().getTime() <= coupon.getStartDate().getTime()) {
+				 throw new CouponSystemException("This coupon has been expired");
+				 }
+			
+			couponRepository.save(coupon);
+			Customer customer = customerRepository.findById((int) this.customer.getId()).get();
+			customer.getCoupons().add(coupon);
+			customerRepository.save(customer);
+			coupon.setAmount(coupon.getAmount() - 1);
+
+			Income income = new Income();
+			income.setClientId(this.customer.getId());
+			income.setAmount(coupon.getPrice());
+			income.setDate((Date) Utils.getCurrentDate());
+			income.setDescription(IncomeType.CUSTOMER_PURCHASE);
+			income.setName("customer " + customer.getCustomerName());
+			incomeService.storeIncome(income);
+
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return customer;
+	}
+			 
+	@Override
+	public List<Coupon> getAllCustomerPurchases(long customer_id) throws Exception {
+		Customer customer = customerRepository.getOne((int) customer_id);
+		if (customer != null) {
+			List<Coupon> coupons = customer.getCoupons();
+			if (coupons != null) {
+				return coupons;
+			} else {
+				throw new CouponSystemException("This customer doesn't have any coupons");
+			}
+		} else {
+			throw new Exception("This customer doesn't exist");
 		}
 	}
 
 	@Override
-	public Customer getCustomerName(String name) {
-		return null;
+	public List<Coupon> couponByType(CouponCaregory couponCaregory) throws Exception {
+		List<Coupon> allCustomercoupons = getAllCustomerPurchases(this.customer.getId());
+		List<Coupon> couponsByType = couponRepository.findByType(couponCaregory);
+		try {
+			for (Coupon coupon : allCustomercoupons) {
+				if (coupon.getType().equals(couponsByType)) {
+					couponsByType.add(coupon);
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Failed to get all coupons by type " + e.getMessage());
+		}
+		return couponsByType;
 	}
 
 	@Override
-	public CouponClientFacade login(String name, String password, LoginType clientType) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Coupon> couponByPrice(double price) throws Exception {
+		List<Coupon> allCustomerCoupons = getAllCustomerPurchases(this.customer.getId());
+		List<Coupon> couponsByPrice = couponRepository.findByPriceLessThan(price);
+		try {
+			for (Coupon coupon : allCustomerCoupons) {
+				if (coupon.getPrice() <= price) {
+					couponsByPrice.add(coupon);
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Failed to get all coupons by price " + e.getMessage());
+		}
+		return couponsByPrice;
+	}
+	 
+	
+	public void deleteCoupon(long couponId) throws CouponSystemException {
+		if (!couponRepository.existsById(couponId)) {
+			throw new CouponSystemException("This coupon id doesn't exist in DataBase");
+		}
+		List<Coupon> customerCoupons = couponRepository.findAllById((int) this.customer.getId());
+		this.customer.setCoupons(customerCoupons);
+		customerRepository.save(this.customer);
 	}
 
-	@Override
-	public boolean performLogin(String name, String password) throws CouponSystemException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public void setCustomer(Customer customer) {
-		this.customer=customer;
-		
-	}
 }
