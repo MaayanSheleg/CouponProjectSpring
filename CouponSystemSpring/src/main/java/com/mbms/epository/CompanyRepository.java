@@ -6,11 +6,11 @@ import org.springframework.stereotype.Repository;
 import com.mbms.model.Company;
 
 @Repository
-public interface CompanyRepository extends JpaRepository<Company, Integer> {
+public interface CompanyRepository extends JpaRepository<Company, Long> {
 
 	Company findByCompanyName(String companyName);
 
-	void deleteById(int compId);
+	void deleteById(Long compId);
 
 	Company findByCompanyNameAndPassword(String name, String password);
 	

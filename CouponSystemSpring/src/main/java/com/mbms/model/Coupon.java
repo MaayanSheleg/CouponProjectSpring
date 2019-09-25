@@ -71,12 +71,13 @@ public class Coupon implements Serializable{
 	@Basic(optional = false)
 	@Column(nullable = false, name="type")
 	@Enumerated(EnumType.STRING)
-	private CouponCaregory type;
+	private CouponType type;
 	
 	@ManyToOne
 	@JsonIgnore
 	@Valid
 	private Company company;
+	
 	@ManyToMany(mappedBy = "coupons")
 	@Valid
 	private List<Customer> customers;

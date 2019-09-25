@@ -19,7 +19,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="company")
+@Table(name="COMPANY")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,7 +29,7 @@ public class Company implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
+	private long id;
 	
 	@Basic(optional = false)
 	@Column (nullable = false, name = "companyName")

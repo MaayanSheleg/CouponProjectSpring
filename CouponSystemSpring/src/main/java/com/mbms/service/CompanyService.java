@@ -10,7 +10,7 @@ import javax.validation.constraints.Positive;
 import com.mbms.exceptions.CouponSystemException;
 import com.mbms.model.Company;
 import com.mbms.model.Coupon;
-import com.mbms.model.CouponCaregory;
+import com.mbms.model.CouponType;
 
 public interface CompanyService {
 	
@@ -19,25 +19,19 @@ public interface CompanyService {
 	boolean checkIfTitleAlreadyExists(String title);
 
 	void updateCoupon(Coupon coupon, Date endDate, double price);
-	
-	void updateCoupon(Coupon coupon, java.util.Date endDate, double price);
 
-	Company getCompany(int id);
+	Company getCompany(long id);
 
-	void deleteCoupon(int couponId) throws Exception;
+	void deleteCoupon(long couponId) throws Exception;
 
 	void setCompany(Company company);
 
-	List<Coupon> getAllCompanyCoupons(int company_id) throws Exception;
+	List<Coupon> getAllCompanyCoupons(long company_id) throws Exception;
 
 	List<Coupon> couponByPrice(double price) throws Exception;
 
-	List<Coupon> couponByCouponType(CouponCaregory couponType) throws Exception;
+	List<Coupon> couponByCouponType(CouponType couponType) throws Exception;
 
 	List<Coupon> couponByDate(Date endDate) throws Exception;
-
-	List<Coupon> couponByDate(java.util.Date endDate) throws Exception;
-
-	
 
 }

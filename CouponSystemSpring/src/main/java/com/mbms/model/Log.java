@@ -12,7 +12,7 @@ public class Log {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private long id;
 	private Date date;
 	private String ip;
 	private String browser;
@@ -31,7 +31,7 @@ public class Log {
 		this.success = success;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

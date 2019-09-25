@@ -1,6 +1,6 @@
 package com.mbms.controller;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +21,7 @@ import com.mbms.login.LoginController;
 import com.mbms.login.Session;
 import com.mbms.model.Company;
 import com.mbms.model.Coupon;
-import com.mbms.model.CouponCaregory;
+import com.mbms.model.CouponType;
 import com.mbms.service.CompanyService;
 import com.mbms.service.CompanyServiceImpl;
 
@@ -92,7 +92,7 @@ public class CompanyController {
 			session.setLastAccesed(System.currentTimeMillis());
 			try {
 				Coupon coupon = null;
-				coupon = couponRepository.findById(id).get();
+				coupon = couponRepository.findById((int) id).get();
 				if (coupon != null) {
 					((CompanyServiceImpl) session.getFacade()).updateCoupon(coupon, endDate, price);
 					ResponseEntity<Coupon> result = new ResponseEntity<>(coupon, HttpStatus.OK);
@@ -114,7 +114,7 @@ public class CompanyController {
 			session.setLastAccesed(System.currentTimeMillis());
 			try {
 				Coupon coupon = null;
-				coupon = couponRepository.findById(couponId).get();
+				coupon = couponRepository.findById((int) couponId).get();
 				if (coupon != null) {
 					((CompanyServiceImpl) session.getFacade()).deleteCoupon((int) couponId);
 				}
@@ -141,7 +141,7 @@ public class CompanyController {
 	}
 	
 	@GetMapping("/getCompanyByCouponType/{couponType}/{token}")
-	public List<Coupon> getCompanyByCouponType(@PathVariable CouponCaregory couponType, @PathVariable String token)
+	public List<Coupon> getCompanyByCouponType(@PathVariable CouponType couponType, @PathVariable String token)
 			throws Exception {
 		Session session = exists(token);
 		if (session == null) {

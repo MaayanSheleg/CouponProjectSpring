@@ -11,9 +11,9 @@ public interface CustomerService {
 	
 	void setCustomer(Customer customer);
 
-	Customer purchaseCoupon(long couponId) throws CouponSystemException ;
+	Customer purchaseCoupon(int couponId) throws CouponSystemException ;
 
-	List<Coupon> getAllCustomerPurchases(long customer_id) throws Exception;
+	List<Coupon> getAllCustomerPurchases(int customer_id) throws Exception;
 
 	List<Coupon> couponByType(CouponCaregory couponCaregory) throws Exception;
 

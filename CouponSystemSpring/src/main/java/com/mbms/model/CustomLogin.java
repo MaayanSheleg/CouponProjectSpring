@@ -29,7 +29,6 @@ public class CustomLogin {
 	}
 
 	@Override
-
 	public String toString() {
 		return "CustomLogin [loginType=" + loginType + ", typeId=" + typeId + "]";
 

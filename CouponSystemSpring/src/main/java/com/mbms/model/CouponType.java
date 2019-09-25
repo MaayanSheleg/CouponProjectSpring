@@ -1,6 +1,6 @@
 package com.mbms.model;
 
-public enum CouponCaregory {
+public enum CouponType {
 	
 	TRAVELING , FOOD , ELECTRICITY , HAELTH , SPORTS , CAMPING , FASHION , RESTURANS;
 

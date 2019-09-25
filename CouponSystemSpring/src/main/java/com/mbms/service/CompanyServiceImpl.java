@@ -1,6 +1,6 @@
 package com.mbms.service;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +16,14 @@ import com.mbms.login.CouponClientFacade;
 import com.mbms.login.LoginType;
 import com.mbms.model.Company;
 import com.mbms.model.Coupon;
-import com.mbms.model.CouponCaregory;
+import com.mbms.model.CouponType;
 import com.mbms.model.Customer;
 import com.mbms.model.Income;
 import com.mbms.model.IncomeType;
 
 @Service
 public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
-
+	
 	@Autowired
 	private CompanyRepository companyRepository;
 
@@ -38,20 +38,14 @@ public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 
 	@Autowired
 	private IncomeRepository incomeRepository;
+
 	private Customer customer;
 	private Company company;
 
-	public void setCompany(Company company) {
-		this.company = company;
-	}
-	
-	public boolean performLogin(String name, String password) {
-		Company company = companyRepository.findByCompanyNameAndPassword(name, password);
-		if (company == null) {
-			return false;
-		} else {
-			return true;
-		}
+	@Override
+	public CouponClientFacade login(String name, String password, LoginType clientType) {
+		System.out.println("Hello "+ name +" company");
+		return null;
 	}
 
 	@Override
@@ -75,20 +69,10 @@ public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 		return coupon;
 	}
 
-	
 	@Override
-	public List<Coupon> getAllCompanyCoupons(int company_id) throws Exception {
-		Company company = companyRepository.getOne(company_id);
-		if (company != null) {
-			List<Coupon> coupons = company.getCoupons();
-			if (coupons != null) {
-				return coupons;
-			} else {
-				throw new CouponSystemException("This company doesn't have any coupons");
-			}
-		} else {
-			throw new Exception("This company doesn't exist");
-		}
+	public boolean checkIfTitleAlreadyExists(String title) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
@@ -106,38 +90,49 @@ public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 	}
 
 	@Override
-	public void deleteCoupon(int couponId) throws Exception {
-//		if (!couponRepository.existsById(couponId)) {
-//			throw new Exception("This coupon id doesn't exist in DataBase");
-//		}
-//		List<Coupon> companyCoupons = couponRepository.findAllById(this.company.getId());
-//		this.company.setCoupons(companyCoupons);
-//		companyRepository.save(this.company);
-//		customerServiceImpl.deleteCoupon(couponId);
-//		couponRepository.deleteById(couponId);
-	}
-
-	@Override
-	public Company getCompany(int id) {
+	public Company getCompany(long id) {
 		return companyRepository.findById(id).get();
 	}
-	
-
 
 	@Override
-	public List<Coupon> couponByCouponType(CouponCaregory couponType) throws Exception {
-		List<Coupon> allCompanycoupons = getAllCompanyCoupons(this.company.getId());
-		List<Coupon> couponsByType = couponRepository.findByType(couponType);
-		try {
-			for (Coupon coupon : allCompanycoupons) {
-				if (coupon.getType().equals(couponsByType)) {
-					couponsByType.add(coupon);
-				}
-			}
-		} catch (Exception e) {
-			System.out.println("Failed to get all coupons by type " + e.getMessage());
+	public void deleteCoupon(long couponId) throws Exception {
+		if (!couponRepository.existsById((int) couponId)) {
+			throw new Exception("This coupon id doesn't exist in DataBase");
 		}
-		return couponsByType;
+		List<Coupon> companyCoupons = couponRepository.findAllById((int) this.company.getId());
+		this.company.setCoupons(companyCoupons);
+		companyRepository.save(this.company);
+//		customerServiceImpl.deleteCoupon(couponId);
+		couponRepository.deleteById((int) couponId);	
+	}
+
+	@Override
+	public void setCompany(Company company) {
+		this.company = company;
+	}
+	
+	public boolean performLogin(String name, String password) {
+		Company company = companyRepository.findByCompanyNameAndPassword(name, password);
+		if (company == null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	@Override
+	public List<Coupon> getAllCompanyCoupons(long company_id) throws Exception {
+		Company company = companyRepository.getOne(company_id);
+		if (company != null) {
+			List<Coupon> coupons = company.getCoupons();
+			if (coupons != null) {
+				return coupons;
+			} else {
+				throw new CouponSystemException("This company doesn't have any coupons");
+			}
+		} else {
+			throw new Exception("This company doesn't exist");
+		}
 	}
 
 	@Override
@@ -157,6 +152,22 @@ public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 	}
 
 	@Override
+	public List<Coupon> couponByCouponType(CouponType couponType) throws Exception {
+		List<Coupon> allCompanycoupons = getAllCompanyCoupons(this.company.getId());
+		List<Coupon> couponsByType = couponRepository.findByType(couponType);
+		try {
+			for (Coupon coupon : allCompanycoupons) {
+				if (coupon.getType().equals(couponsByType)) {
+					couponsByType.add(coupon);
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Failed to get all coupons by type " + e.getMessage());
+		}
+		return couponsByType;
+	}
+
+	@Override
 	public List<Coupon> couponByDate(Date endDate) throws Exception {
 		List<Coupon> allCompanyCoupons = getAllCompanyCoupons(this.company.getId());
 		List<Coupon> couponsByDate = couponRepository.findByEndDateBefore(endDate);
@@ -170,33 +181,5 @@ public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 			System.out.println("Failed to get all coupons by date " + e.getMessage());
 		}
 		return couponsByDate;
-	}
-
-	
-
-	@Override
-	public boolean checkIfTitleAlreadyExists(String title) {
-		if (couponRepository.findByTitle(title) != null) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public CouponClientFacade login(String name, String password, LoginType clientType) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void updateCoupon(Coupon coupon, java.sql.Date endDate, double price) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public List<Coupon> couponByDate(java.sql.Date endDate) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }
