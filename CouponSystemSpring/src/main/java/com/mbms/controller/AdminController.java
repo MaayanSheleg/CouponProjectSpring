@@ -106,8 +106,7 @@ public class AdminController {
 
 	}
 	
-	
-	//no work
+
 	@DeleteMapping ("/deleteCompany/{id}/(token}")
 	public void deleteCompany (@PathVariable int id, @PathVariable String token) throws Exception{
 		Session session = exists(token);
@@ -168,7 +167,6 @@ public class AdminController {
 	}
 	
 	
-//not work
 	@PostMapping("/updateCustomer")
 	public ResponseEntity<Customer> updateCustomer(@RequestParam int id, @RequestParam String password){
 		Customer customer = null;

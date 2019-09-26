@@ -22,7 +22,7 @@ import com.mbms.service.CustomerService;
 import com.mbms.service.CustomerServiceImpl;
 
 @RestController
-@RequestMapping("/customer")
+@RequestMapping("/CUSTOMER")
 public class CustomerController {
 
 	@Autowired
@@ -39,7 +39,7 @@ public class CustomerController {
 	}
 
 	@PostMapping("/purchaseCoupon/{couponId}/{token}")
-	public ResponseEntity<String> purchaseCoupon(@PathVariable int couponId, @PathVariable String token)
+	public ResponseEntity<String> purchaseCoupon(@PathVariable long couponId, @PathVariable String token)
 			throws Exception {
 		
 		Session session = exists(token);
@@ -59,7 +59,7 @@ public class CustomerController {
 	}
 	
 	@GetMapping("/getAllCustomerCoupons/{customer_id}/{token}")
-	public List<Coupon> getAllCustomerCoupons(@PathVariable int customer_id, @PathVariable String token)
+	public List<Coupon> getAllCustomerCoupons(@PathVariable long customer_id, @PathVariable String token)
 			throws Exception {
 		Session session = exists(token);
 		if (session == null) {
