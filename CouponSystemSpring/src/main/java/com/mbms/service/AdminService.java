@@ -12,11 +12,15 @@ boolean performLogin(String name, String password) throws CouponSystemException;
 	
 	//company
 	Company createCompany(Company company) throws CouponSystemException;
+	
 	void deleteCompany(long id);
+	
 	List<Company> allCompanies();
 	
 	boolean checkIfCompanyNameAlreadyExists(String companyName);
+	
 	Company companyById(long id);
+	
 	void updateCompany(Company company, String password, String email);
 
 	//customer
