@@ -23,7 +23,7 @@ import com.mbms.model.IncomeType;
 
 @Service
 public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
-	
+
 	@Autowired
 	private CompanyRepository companyRepository;
 
@@ -44,7 +44,7 @@ public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 
 	@Override
 	public CouponClientFacade login(String name, String password, LoginType clientType) {
-		System.out.println("Hello "+ name +" company");
+		System.out.println("Hello " + name + " company");
 		return null;
 	}
 
@@ -71,7 +71,9 @@ public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 
 	@Override
 	public boolean checkIfTitleAlreadyExists(String title) {
-		// TODO Auto-generated method stub
+		if (couponRepository.findByTitle(title) != null) {
+			return true;
+		}
 		return false;
 	}
 
@@ -103,14 +105,14 @@ public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 		this.company.setCoupons(companyCoupons);
 		companyRepository.save(this.company);
 //		customerServiceImpl.deleteCoupon(couponId);
-		couponRepository.deleteById(couponId);	
+		couponRepository.deleteById(couponId);
 	}
 
 	@Override
 	public void setCompany(Company company) {
 		this.company = company;
 	}
-	
+
 	public boolean performLogin(String name, String password) {
 		Company company = companyRepository.findByCompanyNameAndPassword(name, password);
 		if (company == null) {

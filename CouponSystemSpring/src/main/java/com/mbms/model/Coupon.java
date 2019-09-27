@@ -29,9 +29,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Coupon implements Serializable{
+public class Coupon{
 	
-	private static final long serialVersionUID = 1L;	
 	
 	@Id
 	@GeneratedValue (strategy = GenerationType.SEQUENCE)
@@ -73,13 +72,12 @@ public class Coupon implements Serializable{
 	@Enumerated(EnumType.STRING)
 	private CouponType type;
 	
-	@ManyToOne
-	@JsonIgnore
-	@Valid
-	private Company company;
-	
-	@ManyToMany(mappedBy = "coupons")
-	@Valid
-	private List<Customer> customers;
+//	@ManyToOne
+//	@Valid
+//	private Company company;
+//	
+//	@ManyToMany(mappedBy = "coupons")
+//	@Valid
+//	private List<Customer> customers;
 
 }

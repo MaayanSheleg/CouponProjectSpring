@@ -23,10 +23,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Company implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
-	
+public class Company{
+		
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;

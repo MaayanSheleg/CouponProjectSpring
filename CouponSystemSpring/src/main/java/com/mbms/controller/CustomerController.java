@@ -48,8 +48,7 @@ public class CustomerController {
 		} else if (session != null) {
 			session.setLastAccesed(System.currentTimeMillis());
 			try {
-				if (((CustomerServiceImpl) session.getFacade()).purchaseCoupon(couponId) != null) {
-				}
+				if (((CustomerServiceImpl) session.getFacade()).purchaseCoupon(couponId) != null) 
 				return new ResponseEntity<>("Customer purchaed coupon :  " + couponId, HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(e.getMessage() + e.getStackTrace(), HttpStatus.UNAUTHORIZED);

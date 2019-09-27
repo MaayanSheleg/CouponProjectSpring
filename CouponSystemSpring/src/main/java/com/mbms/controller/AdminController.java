@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mbms.epository.CompanyRepository;
 import com.mbms.login.LoginController;
 import com.mbms.login.Session;
 import com.mbms.model.Company;
@@ -28,6 +29,9 @@ public class AdminController {
 
 	@Autowired
 	private AdminService adminService;
+	
+	@Autowired
+	CompanyRepository companyR;
 
 	@Autowired
 	private Map<String, Session> tokens;
@@ -89,8 +93,8 @@ public class AdminController {
 	}
 
 	@PostMapping("/updateCompany/{token}")
-	public ResponseEntity<String> updateCompany(@RequestParam long id, @RequestParam String password,
-			@RequestParam String email, @PathVariable String token) throws Exception {
+	public ResponseEntity<String> updateCompany(@PathVariable String token, @RequestParam long id, @RequestParam String password,
+			@RequestParam String email) throws Exception {
 
 		Session session = exists(token);
 		if (session == null) {
@@ -238,4 +242,10 @@ public class AdminController {
 			}
 		}
 	}
-}
+	
+	
+	@GetMapping("/allCompanieds")
+	public ResponseEntity<List<Company>> allCompanieds(){
+		return new ResponseEntity<List<Company>>(companyR.findAll(),HttpStatus.OK);
+	}
+	}
