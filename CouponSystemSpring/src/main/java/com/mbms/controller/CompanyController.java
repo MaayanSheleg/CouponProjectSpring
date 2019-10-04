@@ -22,8 +22,10 @@ import com.mbms.login.Session;
 import com.mbms.model.Company;
 import com.mbms.model.Coupon;
 import com.mbms.model.CouponType;
+import com.mbms.model.Income;
 import com.mbms.service.CompanyService;
 import com.mbms.service.CompanyServiceImpl;
+import com.mbms.service.IncomeService;
 
 @RestController
 @RequestMapping("/company")
@@ -34,6 +36,9 @@ public class CompanyController {
 
 	@Autowired
 	private CouponRepository couponRepository;
+	
+	@Autowired
+	private IncomeService incomeService;
 	
 	@Autowired
 	private Map<String, Session> tokens;
@@ -133,6 +138,24 @@ public class CompanyController {
 			session.setLastAccesed(System.currentTimeMillis());
 			try {
 				return ((CompanyServiceImpl) session.getFacade()).getCompany(id);
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		return null;
+	}
+	
+
+	@GetMapping("/viewIncomeByCompanyId/{companyId}/{token}")
+	public List<Income> viewIncomeByCompanyId(@PathVariable long companyId, @PathVariable String token)
+			throws Exception {
+		Session session = exists(token);
+		if (session == null) {
+			throw new Exception("Something went wrong with the session !!");
+		} else if (session != null) {
+			session.setLastAccesed(System.currentTimeMillis());
+			try {
+				return incomeService.viewIncomeByCompany(companyId);
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}

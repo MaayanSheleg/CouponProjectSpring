@@ -22,7 +22,7 @@ import com.mbms.service.CustomerService;
 import com.mbms.service.CustomerServiceImpl;
 
 @RestController
-@RequestMapping("/CUSTOMER")
+@RequestMapping("/customer")
 public class CustomerController {
 
 	@Autowired

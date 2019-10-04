@@ -25,7 +25,6 @@ public class IncomeServiceImpl implements IncomeService{
 		return incomeRepository.findAll();
 	}
 
-	@Override
 	public List<Income> viewIncomeByCustomer(long customerId) throws Exception {
 		try {
 			List<Income> allIncomesByCustomer = incomeRepository.findAllByClientId(customerId);

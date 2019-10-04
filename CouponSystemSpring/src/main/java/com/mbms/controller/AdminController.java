@@ -20,8 +20,10 @@ import com.mbms.login.LoginController;
 import com.mbms.login.Session;
 import com.mbms.model.Company;
 import com.mbms.model.Customer;
+import com.mbms.model.Income;
 import com.mbms.service.AdminService;
 import com.mbms.service.AdminServiceImpl;
+import com.mbms.service.IncomeService;
 
 @RestController
 @RequestMapping("/admin")
@@ -29,6 +31,9 @@ public class AdminController {
 
 	@Autowired
 	private AdminService adminService;
+	
+	@Autowired
+	private IncomeService incomeService;
 	
 	@Autowired
 	CompanyRepository companyR;
@@ -241,11 +246,45 @@ public class AdminController {
 				System.err.println("Failed to delete customer, please insert another id");
 			}
 		}
-	}
-	
+	}	
 	
 	@GetMapping("/allCompanieds")
 	public ResponseEntity<List<Company>> allCompanieds(){
 		return new ResponseEntity<List<Company>>(companyR.findAll(),HttpStatus.OK);
+	}
+	
+	@GetMapping("/viewIncomeByCompanyId/{companyId}/{token}")
+	public List<Income> viewIncomeByCompanyId(@PathVariable long companyId, @PathVariable String token)
+			throws Exception {
+		Session session = exists(token);
+		if (session == null) {
+			throw new Exception("Something went wrong with the session !!");
+		} else if (session != null) {
+			session.setLastAccesed(System.currentTimeMillis());
+			try {
+				return incomeService.viewIncomeByCompany(companyId);
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		return null;
+	}
+	
+	
+	@GetMapping("/viewIncomeByCustomerId/{customerId}/{token}")
+	public List<Income> viewIncomeByCustomerId(@PathVariable long customerId, @PathVariable String token)
+			throws Exception {
+		Session session = exists(token);
+		if (session == null) {
+			throw new Exception("Something went wrong with the session !!");
+		} else if (session != null) {
+			session.setLastAccesed(System.currentTimeMillis());
+			try {
+				return incomeService.viewIncomeByCustomer(customerId);
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		return null;
 	}
 	}
