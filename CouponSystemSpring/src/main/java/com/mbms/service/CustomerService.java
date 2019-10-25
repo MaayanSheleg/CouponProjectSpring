@@ -18,4 +18,6 @@ public interface CustomerService {
 	List<Coupon> couponByType(CouponType couponCaregory) throws Exception;
 
 	List<Coupon> couponByPrice(double price) throws Exception;
+
+	List<Coupon> allCoupons();
 }

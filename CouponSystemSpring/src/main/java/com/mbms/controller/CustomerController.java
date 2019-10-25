@@ -18,6 +18,7 @@ import com.mbms.login.LoginController;
 import com.mbms.login.Session;
 import com.mbms.model.Coupon;
 import com.mbms.model.CouponType;
+import com.mbms.service.AdminService;
 import com.mbms.service.CustomerService;
 import com.mbms.service.CustomerServiceImpl;
 
@@ -106,5 +107,11 @@ public class CustomerController {
 			}
 		}
 		return null;
+	}
+	
+	@GetMapping("/getAllCoupons")
+	public ResponseEntity<List<Coupon>> getAllCoupons(){
+		ResponseEntity<List<Coupon>> result = new ResponseEntity<List<Coupon>>(customerService.allCoupons(), HttpStatus.OK);
+		return result;
 	}
 }
