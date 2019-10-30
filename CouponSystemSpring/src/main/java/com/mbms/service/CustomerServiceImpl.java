@@ -128,10 +128,6 @@ public class CustomerServiceImpl implements CustomerService, CouponClientFacade 
 		return couponsByPrice;
 	}
 	
-//	public List<Coupon> getAllCoupons() throws Exception{
-//		
-//	}
-	
 	@Override
 	public List<Coupon> allCoupons(){
 		return couponRepository.findAll();

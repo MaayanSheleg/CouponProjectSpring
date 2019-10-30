@@ -90,22 +90,24 @@ public class SystemService {
 		}
 		return null;
 	}
-
-	/**
-	 * The function will be activated when the system is activated or every 24 hours
-	 * in which the system operates. The function will get from the DB all expiring
-	 * coupons and remove them from the DB.
-	 */
-
-	@Scheduled(fixedRateString = "${coupon.project.remove.daily.coupon.every.day}")
-	@Transactional
-	public void removeInvalidCoupon() {
-		List<Coupon> allCoupons = couponRepository.findByEndDateBefore(new Date());
-		for (Coupon coupon : allCoupons) {
-			Log log = new Log(new Date(), "FROM  SYSTEM SERVER", "eclipse",
-				"remove daily coupon remove the coupon " + coupon.getTitle(), true);
-			logRepository.save(log);
-			couponRepository.delete(coupon);
-		}
-	}
+//
+//	/**
+//	 * The function will be activated when the system is activated or every 24 hours
+//	 * in which the system operates. The function will get from the DB all expiring
+//	 * coupons and remove them from the DB.
+//	 */
+//
+//	@Scheduled(fixedRateString = "${coupon.project.remove.daily.coupon.every.day}")
+//	@Transactional
+//	public void removeInvalidCoupon() {
+//		List<Coupon> allCoupons = couponRepository.findByEndDateBefore(new Date());
+//		for (Coupon coupon : allCoupons) {
+//			Log log = new Log(new Date(), "FROM  SYSTEM SERVER", "eclipse",
+//				"remove daily coupon remove the coupon " + coupon.getTitle(), true);
+//			logRepository.save(log);
+//			couponRepository.delete(coupon);
+//		}
+//	}
+	
+	
 }
