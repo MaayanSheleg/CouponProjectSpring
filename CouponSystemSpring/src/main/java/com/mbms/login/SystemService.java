@@ -1,24 +1,20 @@
 package com.mbms.login;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.transaction.Transactional;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.mbms.CouponsThread;
 import com.mbms.epository.CompanyRepository;
 import com.mbms.epository.CouponRepository;
 import com.mbms.epository.CustomerRepository;
 import com.mbms.epository.LogRepository;
 import com.mbms.exceptions.CouponSystemException;
 import com.mbms.model.Company;
-import com.mbms.model.Coupon;
 import com.mbms.model.Customer;
-import com.mbms.model.Log;
 import com.mbms.service.AdminServiceImpl;
 import com.mbms.service.CompanyServiceImpl;
 import com.mbms.service.CustomerServiceImpl;
@@ -53,6 +49,19 @@ public class SystemService {
 	
 	@Autowired
 	private ApplicationContext context;
+	
+	@Autowired
+	private CouponsThread couponsThread;
+	
+	 @PostConstruct
+	 public void init() {
+		 couponsThread.startThread();
+	 }
+
+	 @PreDestroy
+	 public void destroy() {
+		 couponsThread.stopThread();
+	 }
 
 	public CouponClientFacade login(String name, String password, LoginType loginType) throws CouponSystemException {
 		switch (loginType) {
