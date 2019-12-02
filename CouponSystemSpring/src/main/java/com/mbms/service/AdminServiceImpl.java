@@ -1,16 +1,19 @@
 package com.mbms.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mbms.epository.CompanyRepository;
+import com.mbms.epository.CouponRepository;
 import com.mbms.epository.CustomerRepository;
 import com.mbms.exceptions.CouponSystemException;
 import com.mbms.login.CouponClientFacade;
 import com.mbms.login.LoginType;
 import com.mbms.model.Company;
+import com.mbms.model.Coupon;
 import com.mbms.model.Customer;
 
 @Service
@@ -21,6 +24,9 @@ public class AdminServiceImpl implements AdminService, CouponClientFacade {
 
 	@Autowired
 	private CustomerRepository customerRepository;
+	
+	@Autowired
+	private CouponRepository couponRepository;
 
 	public AdminServiceImpl() {
 	}
@@ -53,7 +59,20 @@ public class AdminServiceImpl implements AdminService, CouponClientFacade {
 
 	@Override
 	public void deleteCompany(long id) {
-		companyRepository.deleteById(id);
+		try {
+			if (!companyRepository.existsById(id)) {
+				throw new Exception("This company doesn't exist, please try another one");
+			}
+			long i = 0;
+			Company company = companyRepository.getOne(id);
+			List<Coupon> coupons = new ArrayList<Coupon>(company.getCoupons());
+			companyRepository.deleteById(id);
+			for(i=0; i<coupons.size(); i++) {
+				couponRepository.delete(coupons.get((int) i));
+			}
+		}catch (Exception e) {
+			System.out.println("Failed to delete company " + id + e.getMessage());
+		}
 	}
 
 	@Override
