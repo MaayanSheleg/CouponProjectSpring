@@ -24,6 +24,7 @@ import com.mbms.service.CustomerServiceImpl;
  */
 
 @Service
+
 public class SystemService {
 	
 	@Autowired

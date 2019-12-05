@@ -48,7 +48,7 @@ public class AdminController {
 	// COMPANY:
 
 	@GetMapping("/getAllCompnies/{token}")
-	public ResponseEntity<List<Company>> getAllCompany(@PathVariable String token) throws Exception {
+	public ResponseEntity<?> getAllCompany(@PathVariable String token) throws Exception {
 		Session session = exists(token);
 		if (session == null) {
 			throw new Exception("wrong session");
